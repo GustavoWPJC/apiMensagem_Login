@@ -4,10 +4,12 @@ import com.chat.chat.model.Mensagem;
 import com.chat.chat.repository.MensagemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:3000") // <-- aqui libera pro front local
 @RestController
 @RequestMapping("/mensagens")
 public class MensagemController {

@@ -1,6 +1,5 @@
 package com.chat.chat.model;
 
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,18 +9,26 @@ import jakarta.persistence.Id;
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
 
     private String nome;
     private String email;
     private String senha;
+    private int crp;
+    private String tipo; // PSICOLOGO ou SUPERVISOR
 
-    public Usuario(){}
+    public Usuario() {}
 
-    public Usuario(String nome, String email, String senha) {
+    public Usuario(String nome, String email, String senha, int crp, String tipo) {
         this.nome = nome;
         this.email = email;
         this.senha = senha;
+        this.crp = crp;
+        this.tipo = tipo;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getNome() {
@@ -46,5 +53,21 @@ public class Usuario {
 
     public void setSenha(String senha) {
         this.senha = senha;
+    }
+
+    public int getCrp() {
+        return crp;
+    }
+
+    public void setCrp(int crp) {
+        this.crp = crp;
+    }
+
+    public String getTipoUsuario() {
+        return tipo;
+    }
+
+    public void setTipoUsuario(String tipo) {
+        this.tipo = tipo;
     }
 }

@@ -1,14 +1,11 @@
 package com.chat.chat.controller;
 
-
 import com.chat.chat.model.Usuario;
 import com.chat.chat.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -18,19 +15,25 @@ public class UsuarioController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    //  Cadastro
+    // Cadastro de novo usuário (psicólogo, supervisor, etc.)
     @PostMapping
-    public Usuario cadastrar(@RequestBody Usuario usuario){
+    public Usuario cadastrar(@RequestBody Usuario usuario) {
         return usuarioRepository.save(usuario);
     }
 
-    // login, que retorna o usuário caso a senha esteja correta
+    // Login: verifica e retorna o usuário se email e senha estiverem corretos
     @PostMapping("/login")
-    public  Usuario login(@RequestBody Usuario dados){
+    public Usuario login(@RequestBody Usuario dados) {
         Optional<Usuario> usuario = usuarioRepository.findByEmail(dados.getEmail());
-        if (usuario.isPresent() && usuario.get().getSenha().equals(dados.getSenha())){
+        if (usuario.isPresent() && usuario.get().getSenha().equals(dados.getSenha())) {
             return usuario.get();
         }
         throw new RuntimeException("Email ou senha inválidos");
+    }
+
+    // Listar todos os usuários por tipo (ex: psicologo, supervisor, usuario)
+    @GetMapping("/tipo/{tipo}")
+    public List<Usuario> listarPorTipo(@PathVariable String tipo) {
+        return usuarioRepository.findByTipo(tipo);
     }
 }

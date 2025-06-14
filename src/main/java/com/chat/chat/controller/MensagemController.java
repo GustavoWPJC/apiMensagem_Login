@@ -23,15 +23,14 @@ public class MensagemController {
     }
 
     // Listar todas as mensagens de um usuário (remetente ou destinatário)
-    @GetMapping("/{usuarioId}")
+    @GetMapping("/usuario/{usuarioId}")
     public List<Mensagem> listarTodasDoUsuario(@PathVariable Long usuarioId) {
         return repository.findByRemetenteIdOrDestinatarioIdOrderByDataEnvioAsc(usuarioId, usuarioId);
     }
 
-    // Listar apenas as mensagens entre dois usuários
     @GetMapping("/{usuario1Id}/{usuario2Id}")
     public List<Mensagem> listarEntreUsuarios(@PathVariable Long usuario1Id, @PathVariable Long usuario2Id) {
-        return repository.findByRemetenteIdAndDestinatarioIdOrRemetenteIdAndDestinatarioIdOrderByDataEnvioAsc(
+        return repository.findMensagensEntreUsuarios(
                 usuario1Id, usuario2Id,
                 usuario2Id, usuario1Id
         );

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:3000") // <-- aqui libera pro front local
+@CrossOrigin(origins = "https://psiconecta.vercel.app/") // <-- aqui libera pro front local
 @RestController
 @RequestMapping("/mensagens")
 public class MensagemController {

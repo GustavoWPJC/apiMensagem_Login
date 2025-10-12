@@ -1,40 +1,40 @@
 package com.chat.chat.controller;
 
 import com.chat.chat.model.Mensagem;
+import com.chat.chat.model.Conversa;
 import com.chat.chat.repository.MensagemRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.chat.chat.repository.ConversaRepository;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@CrossOrigin(origins = { "http://localhost:3000", "https://psiconecta.vercel.app/" }) // <-- aqui libera pro front local
 @RestController
 @RequestMapping("/mensagens")
 public class MensagemController {
 
-    @Autowired
-    private MensagemRepository repository;
+    private final MensagemRepository repo;
+    private final ConversaRepository conversaRepo;
 
-    // Enviar mensagem
+    public MensagemController(MensagemRepository repo, ConversaRepository conversaRepo) {
+        this.repo = repo;
+        this.conversaRepo = conversaRepo;
+    }
+
+    // Envia uma mensagem dentro de uma conversa existente (forneça conversaId)
     @PostMapping
-    public Mensagem enviar(@RequestBody Mensagem mensagem) {
-        mensagem.setDataEnvio(LocalDateTime.now());
-        return repository.save(mensagem);
+    public Mensagem enviar(@RequestBody Mensagem m) {
+        m.setDataEnvio(LocalDateTime.now());
+        // garante que conversa existe
+        Conversa c = conversaRepo.findById(m.getConversa().getId())
+                .orElseThrow(() -> new RuntimeException("Conversa não encontrada"));
+        m.setConversa(c);
+        return repo.save(m);
     }
 
-    // Listar todas as mensagens de um usuário (remetente ou destinatário)
-    @GetMapping("/usuario/{usuarioId}")
-    public List<Mensagem> listarTodasDoUsuario(@PathVariable Long usuarioId) {
-        return repository.findByRemetenteIdOrDestinatarioIdOrderByDataEnvioAsc(usuarioId, usuarioId);
-    }
-
-    @GetMapping("/{usuario1Id}/{usuario2Id}")
-    public List<Mensagem> listarEntreUsuarios(@PathVariable Long usuario1Id, @PathVariable Long usuario2Id) {
-        return repository.findMensagensEntreUsuarios(
-                usuario1Id, usuario2Id,
-                usuario2Id, usuario1Id
-        );
+    // Listar mensagens por conversa
+    @GetMapping("/conversa/{conversaId}")
+    public List<Mensagem> listarPorConversa(@PathVariable Integer conversaId) {
+        return repo.findByConversaIdOrderByDataEnvioAsc(conversaId);
     }
 }

@@ -1,62 +1,60 @@
 package com.chat.chat.controller;
 
 import com.chat.chat.model.Solicitacao;
+import com.chat.chat.model.Psicologo;
+import com.chat.chat.model.Supervisor;
 import com.chat.chat.repository.SolicitacaoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.chat.chat.repository.PsicologoRepository;
+import com.chat.chat.repository.SupervisorRepository;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.CrossOrigin;
-
 
 import java.util.List;
-import java.util.Optional;
 
-@CrossOrigin(origins = { "http://localhost:3000", "https://psiconecta.vercel.app/" }) // <-- aqui libera pro front local
 @RestController
 @RequestMapping("/solicitacoes")
 public class SolicitacaoController {
 
-    @Autowired
-    private SolicitacaoRepository repository;
+    private final SolicitacaoRepository repo;
+    private final PsicologoRepository psicRepo;
+    private final SupervisorRepository supRepo;
 
-    // Enviar uma solicitação
+    public SolicitacaoController(SolicitacaoRepository repo, PsicologoRepository psicRepo, SupervisorRepository supRepo) {
+        this.repo = repo;
+        this.psicRepo = psicRepo;
+        this.supRepo = supRepo;
+    }
+
     @PostMapping
-    public Solicitacao enviar(@RequestBody Solicitacao solicitacao) {
-        return repository.save(solicitacao);
+    public Solicitacao criar(@RequestBody Solicitacao s) {
+        // espera que corpo contenha psicologo.id e supervisor.id
+        Psicologo p = psicRepo.findById(s.getPsicologo().getId()).orElseThrow(() -> new RuntimeException("Psicologo não encontrado"));
+        Supervisor sup = supRepo.findById(s.getSupervisor().getId()).orElseThrow(() -> new RuntimeException("Supervisor não encontrado"));
+        s.setPsicologo(p);
+        s.setSupervisor(sup);
+        return repo.save(s);
     }
 
-    // Listar solicitações recebidas por um supervisor
     @GetMapping("/supervisor/{id}")
-    public List<Solicitacao> recebidas(@PathVariable Long id) {
-        return repository.findBySupervisorId(id);
+    public List<Solicitacao> recebidas(@PathVariable Integer id) {
+        return repo.findBySupervisorId(id);
     }
 
-    // Listar solicitações feitas por um psicólogo
     @GetMapping("/psicologo/{id}")
-    public List<Solicitacao> feitas(@PathVariable Long id) {
-        return repository.findByPsicologoId(id);
+    public List<Solicitacao> feitas(@PathVariable Integer id) {
+        return repo.findByPsicologoId(id);
     }
 
-    // Aceitar uma solicitação
     @PostMapping("/{id}/aceitar")
     public Solicitacao aceitar(@PathVariable Long id) {
-        Optional<Solicitacao> solicitacao = repository.findById(id);
-        if (solicitacao.isPresent()) {
-            Solicitacao s = solicitacao.get();
-            s.setStatus("ACEITA");
-            return repository.save(s);
-        }
-        throw new RuntimeException("Solicitação não encontrada");
+        Solicitacao s = repo.findById(id).orElseThrow(() -> new RuntimeException("Solicitação não encontrada"));
+        s.setStatus("aceita");
+        return repo.save(s);
     }
 
-    // Recusar uma solicitação
     @PostMapping("/{id}/recusar")
     public Solicitacao recusar(@PathVariable Long id) {
-        Optional<Solicitacao> solicitacao = repository.findById(id);
-        if (solicitacao.isPresent()) {
-            Solicitacao s = solicitacao.get();
-            s.setStatus("RECUSADA");
-            return repository.save(s);
-        }
-        throw new RuntimeException("Solicitação não encontrada");
+        Solicitacao s = repo.findById(id).orElseThrow(() -> new RuntimeException("Solicitação não encontrada"));
+        s.setStatus("recusada");
+        return repo.save(s);
     }
 }

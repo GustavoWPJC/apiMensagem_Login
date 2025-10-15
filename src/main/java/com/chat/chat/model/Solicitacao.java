@@ -9,7 +9,7 @@ public class Solicitacao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_solicitacao")
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne

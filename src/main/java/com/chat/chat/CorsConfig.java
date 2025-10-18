@@ -18,7 +18,7 @@ public class CorsConfig {
                                 "http://127.0.0.1:3000",
                                 "https://front-psiconecta.vercel.app" // adiciona seu front de produção
                         )
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true);
             }

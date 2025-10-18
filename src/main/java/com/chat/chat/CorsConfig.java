@@ -13,8 +13,11 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // Aplica a todas as rotas
-                        .allowedOrigins("http://localhost:3000")// Permite apenas seu front local
-                        .allowedOrigins("http://127.0.0.1:3000")
+                        .allowedOrigins(
+                                "http://localhost:3000",
+                                "http://127.0.0.1:3000",
+                                "https://front-psiconecta.vercel.app" // adiciona seu front de produção
+                        )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true);
@@ -22,4 +25,3 @@ public class CorsConfig {
         };
     }
 }
-
